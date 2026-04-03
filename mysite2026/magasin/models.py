@@ -22,9 +22,11 @@ class Categorie(models.Model):
         ('Sn','Sanitaire'), ('Vs','Vaisselle'),
         ('Vt','Vêtement'),('Jx','Jouets'),
         ('Lg','Linge de Maison'),('Bj','Bijoux'),('Dc','Décor')]
-    name=models.CharField(max_length=100,default="alimentaire")
+    nom=models.CharField(max_length=100)
+    type=models.CharField(max_length=2, default="al",choices=TYPES_CHOICES)
+
     def __str__(self):
-        return self.name
+        return self.nom
 class Fournisseur(models.Model):
     nom=models.CharField(max_length=100)
     adresse=models.TextField(max_length=200)

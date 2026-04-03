@@ -1,0 +1,30 @@
+{% extends 'magasin/base.html' %}
+{% block title %}Produits{% endblock %}
+{% block content %}
+<div class="container mt-3">
+  <h2>Gestion des produits</h2>
+
+  <button class="btn btn-success mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#formProduit">
+    Ajouter
+  </button>
+
+  <div id="formProduit" class="collapse">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }} 
+      <button type="submit" class="btn btn-primary">Enregistrer</button>
+    </form>
+  </div>
+
+  <h3 class="mt-4">Produits existants</h3>
+  <ul class="list-group">
+    {% for product in products %}
+    <li class="list-group-item">
+      {{ product.libelle }} - {{ product.categorie.nom }}
+    </li>
+    {% empty %}
+    <li class="list-group-item">Aucun produit pour l’instant.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

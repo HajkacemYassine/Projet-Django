@@ -1,0 +1,58 @@
+#conteneur
+{
+ display: flex;
+ justify-content: center;
+ align-items: center;
+}
+/* Style du menu latéral */
+.list-group-item.active {
+    background-color: #198754; /* vert Bootstrap */
+    border-color: #198754;
+    color: #fff;
+}
+
+/* Supprimer le soulignement des liens et garder la couleur du texte */
+.list-group-item a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Effet hover sur les catégories */
+.list-group-item:hover {
+    background-color: #e9ecef;
+    cursor: pointer;
+}
+
+/* Style des cartes produits */
+.card {
+    border: 1px solid #dee2e6;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+/* Menu latéral */
+.list-group-item.active {
+    background-color: #198754; /* vert */
+    border-color: #198754;
+    color: #fff;
+}
+.list-group-item a {
+    text-decoration: none;
+    color: inherit;
+}
+.list-group-item:hover {
+    background-color: #e9ecef;
+    cursor: pointer;
+}
+
+/* Cartes produits */
+.card {
+    border: 1px solid #dee2e6;
+    transition: transform 0.2s ease-in-out;
+}
+.card:hover {
+    transform: scale(1.05);
+}
+

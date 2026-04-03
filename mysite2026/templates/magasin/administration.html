@@ -1,0 +1,33 @@
+{% extends 'magasin/base.html' %}
+{% block title %}Administration{% endblock %}
+{% block content %}
+<div class="container mt-3">
+  <h2>Tableau de bord Administration</h2>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Produits</h5>
+          <p class="card-text">{{ nb_produits }} produits enregistrés</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Fournisseurs</h5>
+          <p class="card-text">{{ nb_fournisseurs }} fournisseurs actifs</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title">Utilisateurs</h5>
+          <p class="card-text">{{ nb_users }} comptes créés</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

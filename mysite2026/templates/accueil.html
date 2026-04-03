@@ -1,0 +1,38 @@
+{% extends 'magasin/base.html' %}
+{% block title %}Accueil{% endblock %}
+{% block content %}
+<div class="container mt-5 text-center">
+  <h1 class="mb-4">Bienvenue sur mon projet Django</h1>
+  <p class="text-muted mb-5">Choisissez un projet à explorer :</p>
+
+  <div class="row justify-content-center">
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm border-0 h-100 transition">
+        <div class="card-body">
+          <div class="mb-3">
+            <i class="bi bi-cart-fill text-primary" ></i>
+          </div>
+          <h5 class="card-title">Projet Magasin</h5>
+          <p class="card-text text-muted">Gestion des produits et des stocks</p>
+          <a href="/magasin/" class="btn btn-primary">Accéder au Magasin</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm border-0 h-100 transition">
+        <div class="card-body">
+          <div class="mb-3">
+            <i class="bi bi-clipboard-check text-success" ></i>
+          </div>
+          <h5 class="card-title">Mini Projet</h5>
+          <p class="card-text text-muted">Fonctionnalités simplifiées</p>
+          <a href="/miniprojet/" class="btn btn-success">Ouvrir le Mini Projet</a>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'magasin/base.html' %}
+{% block title %}Fournisseurs{% endblock %}
+{% block content %}
+<div class="container mt-3">
+  <h2>Liste des fournisseurs</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Email</th>
+        <th>Téléphone</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for fournisseur in fournisseurs %}
+      <tr>
+        <td>{{ fournisseur.nom }}</td>
+        <td>{{ fournisseur.email }}</td>
+        <td>{{ fournisseur.telephone }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
