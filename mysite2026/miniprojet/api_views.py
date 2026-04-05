@@ -629,3 +629,35 @@ def export_csv_donneurs(request):
         ])
  
     return response
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def toutes_demandes(request):
+    demandes = DemandeUrgente.objects.filter(statut='active').select_related('hopital')
+    return Response(DemandeUrgenteSerializer(demandes, many=True).data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def mes_reponses(request):
+    try:
+        donneur = request.user.donneur
+    except:
+        return Response({'error': 'Pas un donneur'}, status=403)
+    reponses = Reponse_Appel.objects.filter(donneur=donneur).select_related('demande_urgente__hopital').order_by('-date_reponse')
+    data = [{
+        'id': r.id,
+        'date_reponse': r.date_reponse,
+        'statut_reponse': r.statut_reponse,
+        'groupe_sanguin': r.demande_urgente.groupe_sanguin,
+        'hopital_nom': r.demande_urgente.hopital.nom,
+    } for r in reponses]
+    return Response(data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def mes_inscriptions(request):
+    try:
+        donneur = request.user.donneur
+    except:
+        return Response({'error': 'Pas un donneur'}, status=403)
+    inscriptions = Inscription.objects.filter(donneur=donneur).select_related('campagne').order_by('-date_inscription')
+    return Response(InscriptionSerializer(inscriptions, many=True).data)

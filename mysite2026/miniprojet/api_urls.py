@@ -42,4 +42,8 @@ urlpatterns = [
  
     # ── Export CSV (admin) ────────────────────────────────────────────────
     path('export-csv/', api_views.export_csv_donneurs, name='blood_export_csv'),
+
+    path('demandes-urgentes/toutes/', api_views.toutes_demandes,   name='blood_toutes_demandes'),
+    path('mes-reponses/',             api_views.mes_reponses,       name='blood_mes_reponses'),
+    path('mes-inscriptions/',         api_views.mes_inscriptions,   name='blood_mes_inscriptions'),
 ]

@@ -1,0 +1,9 @@
+Prediction request - ville: Bizerte, auto_create: True
+Predictions result: None
+Prediction request - ville: Bizerte, auto_create: True
+Predictions result: None
+Prediction request - ville: Bizerte, auto_create: True
+Predictions result: None
+Prediction request - ville: Tunis, auto_create: True
+Predictions result: {'A+': 6, 'A-': 5, 'B+': 4, 'B-': 3, 'AB+': 3, 'AB-': 2, 'O+': 6, 'O-': 3}
+Alerts generated: 3

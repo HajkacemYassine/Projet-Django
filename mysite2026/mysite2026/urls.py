@@ -17,5 +17,6 @@ urlpatterns = [
     path('magasin/', include('magasin.urls')),
     path('miniprojet/', include('miniprojet.urls')),
     path('blood-api/', include('miniprojet.api_urls')),
+    path('ml-api/', include('ml_models.urls')),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
