@@ -126,8 +126,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static", 'C:\\Users\\yassi\\OneDrive\\Documents\\yassine\\dsi semestre2\\framework django\\projetdjango\\mysite2026\\static', ]
-
+STATICFILES_DIRS = [BASE_DIR / "static"] if (BASE_DIR / "static").exists() else []
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 from datetime import timedelta
 
 CORS_ALLOWED_ORIGINS = [
