@@ -1,0 +1,1 @@
+web: cd mysite2026 && python -m gunicorn mysite2026.wsgi --bind 0.0.0.0:$PORT
