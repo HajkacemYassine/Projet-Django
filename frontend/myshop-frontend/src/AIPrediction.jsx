@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 const ML_API = "http://localhost:8000/ml-api";
 
-// Composant principal de prédiction IA
+// 🎨 Design moderne et élégant
 export function AIPredictionDashboard({ getHeaders, onToast }) {
   const [loading, setLoading] = useState(false);
   const [modelTrained, setModelTrained] = useState(false);
@@ -14,34 +14,26 @@ export function AIPredictionDashboard({ getHeaders, onToast }) {
 
   const VILLES = ['Tunis', 'Sfax', 'Sousse', 'Bizerte', 'Nabeul', 'Gabes', 'Kairouan'];
 
-  // Vérifier si le modèle existe au chargement
   useEffect(() => {
+    const checkModelStatus = async () => {
+      try {
+        const res = await fetch(`${ML_API}/statistics/?days=7`, { headers: getHeaders() });
+        if (res.ok) {
+          const data = await res.json();
+          setStats(data);
+        }
+      } catch {
+        console.log('Erreur vérification modèle');
+      }
+    };
     checkModelStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const checkModelStatus = async () => {
-    try {
-      const res = await fetch(`${ML_API}/statistics/?days=7`, {
-        headers: getHeaders()
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setStats(data);
-        // Si on a des stats, le modèle peut potentiellement être entraîné
-      }
-    } catch (err) {
-      console.log('Erreur vérification modèle');
-    }
-  };
-
-  // Entraîner le modèle
   const trainModel = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${ML_API}/train/`, {
-        method: 'POST',
-        headers: getHeaders()
-      });
+      const res = await fetch(`${ML_API}/train/`, { method: 'POST', headers: getHeaders() });
       const data = await res.json();
       if (res.ok) {
         setModelTrained(true);
@@ -55,30 +47,22 @@ export function AIPredictionDashboard({ getHeaders, onToast }) {
     setLoading(false);
   };
 
-  // Prédire avec alertes
   const predictWithAlerts = async () => {
     setLoading(true);
     try {
-      const headers = getHeaders();
-      console.log('Headers:', headers);
-      console.log('Ville:', ville);
-      
       const res = await fetch(`${ML_API}/predict-with-alerts/`, {
         method: 'POST',
-        headers: headers,
+        headers: getHeaders(),
         body: JSON.stringify({ ville, auto_create_demand: true })
       });
       
-      console.log('Response status:', res.status);
       const data = await res.json();
-      console.log('Response data:', data);
       
       if (res.ok) {
         setPredictions(data.predictions);
         setAlerts(data.alerts || []);
         onToast(`✅ Prédictions générées ! ${data.alerts?.length || 0} alertes détectées`);
       } else {
-        // Vérifier si c'est une erreur de modèle non entraîné
         if (data.action_required === 'train_model') {
           onToast('⚠️ ' + (data.error || 'Entraînez d\'abord le modèle'), 'warn');
           setModelTrained(false);
@@ -87,19 +71,15 @@ export function AIPredictionDashboard({ getHeaders, onToast }) {
         }
       }
     } catch (err) {
-      console.error('Error:', err);
       onToast('Erreur réseau: ' + err.message, 'error');
     }
     setLoading(false);
   };
 
-  // Obtenir les visualisations
   const getVisualizations = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${ML_API}/visualizations/?days=30`, {
-        headers: getHeaders()
-      });
+      const res = await fetch(`${ML_API}/visualizations/?days=30`, { headers: getHeaders() });
       const data = await res.json();
       if (res.ok && data.charts) {
         setCharts(data.charts);
@@ -119,245 +99,272 @@ export function AIPredictionDashboard({ getHeaders, onToast }) {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      {/* Header */}
-      <div style={{ 
+    <div style={{ padding: '32px', maxWidth: '1400px', margin: '0 auto' }}>
+      {/* 🎯 Hero Section */}
+      <div style={{
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        borderRadius: '16px',
-        padding: '24px',
+        borderRadius: '24px',
+        padding: '48px',
         color: 'white',
-        marginBottom: '24px'
+        marginBottom: '32px',
+        position: 'relative',
+        overflow: 'hidden',
+        boxShadow: '0 20px 60px rgba(102, 126, 234, 0.3)'
       }}>
-        <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '700', marginBottom: '8px' }}>
-          🤖 Prédiction IA de Demande en Sang
-        </h2>
-        <p style={{ margin: 0, opacity: 0.9, fontSize: '14px' }}>
-          Anticipez les besoins en sang grâce à l'intelligence artificielle
-        </p>
+        <div style={{ position: 'absolute', top: -50, right: -50, width: 200, height: 200, background: 'rgba(255,255,255,0.1)', borderRadius: '50%', filter: 'blur(40px)' }} />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ fontSize: '52px', marginBottom: '16px' }}>🤖</div>
+          <h1 style={{ margin: 0, fontSize: '36px', fontWeight: '800', marginBottom: '12px', letterSpacing: '-1px' }}>
+            Intelligence Artificielle
+          </h1>
+          <p style={{ margin: 0, opacity: 0.95, fontSize: '18px', maxWidth: '600px', lineHeight: 1.6 }}>
+            Anticipez les besoins en sang grâce au machine learning et optimisez la gestion des stocks
+          </p>
+        </div>
       </div>
 
-      {/* Info box */}
+      {/* ⚠️ Warning si modèle non entraîné */}
       {!modelTrained && (
         <div style={{
-          background: '#fdebd0',
-          border: '2px solid #e67e22',
-          borderRadius: '12px',
-          padding: '16px',
-          marginBottom: '24px',
-          fontSize: '14px',
-          color: '#d35400',
+          background: 'linear-gradient(135deg, #fff5e6 0%, #ffe8cc 100%)',
+          border: '2px solid #ff9800',
+          borderRadius: '16px',
+          padding: '24px',
+          marginBottom: '32px',
           display: 'flex',
           alignItems: 'center',
-          gap: '12px'
+          gap: '20px',
+          boxShadow: '0 4px 20px rgba(255, 152, 0, 0.15)'
         }}>
-          <span style={{ fontSize: '24px' }}>⚠️</span>
-          <div>
-            <strong>Modèle non entraîné</strong>
-            <div style={{ marginTop: '4px', fontSize: '13px' }}>
-              Cliquez sur "Entraîner le Modèle" avant de faire des prédictions.
+          <div style={{ fontSize: '48px', flexShrink: 0 }}>⚠️</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: '18px', fontWeight: '700', color: '#e65100', marginBottom: '8px' }}>
+              Modèle non entraîné
+            </div>
+            <div style={{ fontSize: '14px', color: '#bf360c', lineHeight: 1.6 }}>
+              Cliquez sur "Entraîner le Modèle" pour initialiser l'IA avant de faire des prédictions.
             </div>
           </div>
         </div>
       )}
 
-      <div style={{
-        background: '#d6eaf8',
-        border: '2px solid #2980b9',
-        borderRadius: '12px',
-        padding: '16px',
-        marginBottom: '24px',
-        fontSize: '14px',
-        color: '#1a5276'
-      }}>
-        <strong>ℹ️ Instructions :</strong>
-        <ol style={{ margin: '8px 0 0 20px', padding: 0 }}>
-          <li>Cliquez sur "Entraîner le Modèle" (première utilisation)</li>
-          <li>Sélectionnez une ville</li>
-          <li>Cliquez sur "Prédire la Demande"</li>
-          <li>Consultez les résultats et alertes</li>
-        </ol>
-      </div>
+      {/* 📊 Statistiques */}
+      {stats && stats.statistiques && (
+        <div style={{
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          borderRadius: '20px',
+          padding: '32px',
+          color: 'white',
+          marginBottom: '32px',
+          boxShadow: '0 10px 40px rgba(102, 126, 234, 0.25)'
+        }}>
+          <div style={{ fontSize: '16px', opacity: 0.9, marginBottom: '20px', fontWeight: '600' }}>
+            📊 Statistiques des {stats.periode_jours} derniers jours
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '24px' }}>
+            {[
+              { label: 'Demandes', value: stats.statistiques.total_demandes || 0, icon: '📋' },
+              { label: 'Unités totales', value: stats.statistiques.quantite_totale || 0, icon: '🩸' },
+              { label: 'Moyenne', value: Math.round(stats.statistiques.quantite_moyenne || 0), icon: '📈' }
+            ].map((stat, i) => (
+              <div key={i} style={{
+                background: 'rgba(255,255,255,0.15)',
+                backdropFilter: 'blur(10px)',
+                borderRadius: '16px',
+                padding: '20px',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                <div style={{ fontSize: '32px', marginBottom: '8px' }}>{stat.icon}</div>
+                <div style={{ fontSize: '36px', fontWeight: '800', marginBottom: '4px' }}>{stat.value}</div>
+                <div style={{ fontSize: '13px', opacity: 0.9 }}>{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
-      {/* Actions principales */}
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-        gap: '16px',
-        marginBottom: '24px'
-      }}>
+      {/* 🎮 Actions principales */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '32px' }}>
         <button
           onClick={trainModel}
           disabled={loading}
           style={{
-            padding: '14px 20px',
-            background: modelTrained ? '#27ae60' : 'linear-gradient(135deg, #667eea, #764ba2)',
+            padding: '20px 28px',
+            background: modelTrained ? 'linear-gradient(135deg, #27ae60, #2ecc71)' : 'linear-gradient(135deg, #667eea, #764ba2)',
             border: 'none',
-            borderRadius: '12px',
+            borderRadius: '16px',
             color: 'white',
-            fontSize: '14px',
-            fontWeight: '600',
+            fontSize: '16px',
+            fontWeight: '700',
             cursor: loading ? 'not-allowed' : 'pointer',
-            transition: 'all 0.2s',
-            opacity: loading ? 0.6 : 1
+            transition: 'all 0.3s',
+            opacity: loading ? 0.6 : 1,
+            boxShadow: '0 8px 24px rgba(102, 126, 234, 0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '12px'
           }}
+          onMouseEnter={e => !loading && (e.currentTarget.style.transform = 'translateY(-4px)')}
+          onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
         >
-          {loading ? '⏳ Chargement...' : modelTrained ? '✅ Modèle Entraîné' : '🎓 Entraîner le Modèle'}
+          <span style={{ fontSize: '24px' }}>{loading ? '⏳' : modelTrained ? '✅' : '🎓'}</span>
+          {loading ? 'Chargement...' : modelTrained ? 'Modèle Entraîné' : 'Entraîner le Modèle'}
         </button>
 
         <button
           onClick={predictWithAlerts}
           disabled={loading}
           style={{
-            padding: '14px 20px',
+            padding: '20px 28px',
             background: 'linear-gradient(135deg, #f093fb, #f5576c)',
             border: 'none',
-            borderRadius: '12px',
+            borderRadius: '16px',
             color: 'white',
-            fontSize: '14px',
-            fontWeight: '600',
+            fontSize: '16px',
+            fontWeight: '700',
             cursor: loading ? 'not-allowed' : 'pointer',
-            opacity: loading ? 0.6 : 1
+            opacity: loading ? 0.6 : 1,
+            boxShadow: '0 8px 24px rgba(245, 87, 108, 0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '12px'
           }}
+          onMouseEnter={e => !loading && (e.currentTarget.style.transform = 'translateY(-4px)')}
+          onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
         >
-          {loading ? '⏳ Chargement...' : '🔮 Prédire la Demande'}
+          <span style={{ fontSize: '24px' }}>🔮</span>
+          {loading ? 'Chargement...' : 'Prédire la Demande'}
         </button>
 
         <button
           onClick={getVisualizations}
           disabled={loading}
           style={{
-            padding: '14px 20px',
+            padding: '20px 28px',
             background: 'linear-gradient(135deg, #4facfe, #00f2fe)',
             border: 'none',
-            borderRadius: '12px',
+            borderRadius: '16px',
             color: 'white',
-            fontSize: '14px',
-            fontWeight: '600',
+            fontSize: '16px',
+            fontWeight: '700',
             cursor: loading ? 'not-allowed' : 'pointer',
-            opacity: loading ? 0.6 : 1
+            opacity: loading ? 0.6 : 1,
+            boxShadow: '0 8px 24px rgba(79, 172, 254, 0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '12px'
           }}
+          onMouseEnter={e => !loading && (e.currentTarget.style.transform = 'translateY(-4px)')}
+          onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
         >
-          {loading ? '⏳ Chargement...' : '📊 Voir les Graphiques'}
+          <span style={{ fontSize: '24px' }}>📊</span>
+          {loading ? 'Chargement...' : 'Voir les Graphiques'}
         </button>
       </div>
 
-      {/* Sélection ville */}
-      <div style={{ marginBottom: '24px' }}>
-        <label style={{ 
-          display: 'block', 
-          fontSize: '12px', 
-          fontWeight: '600', 
+      {/* 🏙️ Sélection ville */}
+      <div style={{
+        background: 'white',
+        borderRadius: '16px',
+        padding: '24px',
+        marginBottom: '32px',
+        border: '1px solid #e8ecef',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.04)'
+      }}>
+        <label style={{
+          display: 'block',
+          fontSize: '14px',
+          fontWeight: '700',
           color: '#6c757d',
-          marginBottom: '8px',
+          marginBottom: '12px',
           textTransform: 'uppercase',
-          letterSpacing: '0.5px'
+          letterSpacing: '1px'
         }}>
-          Ville
+          🏙️ Ville
         </label>
         <select
           value={ville}
           onChange={(e) => setVille(e.target.value)}
           style={{
             width: '100%',
-            maxWidth: '300px',
-            padding: '12px',
+            maxWidth: '400px',
+            padding: '14px 16px',
             border: '2px solid #e8ecef',
-            borderRadius: '10px',
-            fontSize: '14px',
+            borderRadius: '12px',
+            fontSize: '16px',
             background: '#f8f9fa',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            fontWeight: '600',
+            transition: 'all 0.2s'
           }}
+          onFocus={e => e.target.style.borderColor = '#667eea'}
+          onBlur={e => e.target.style.borderColor = '#e8ecef'}
         >
           {VILLES.map(v => <option key={v} value={v}>{v}</option>)}
         </select>
       </div>
 
-      {/* Statistiques */}
-      {stats && stats.statistiques && (
-        <div style={{
-          background: 'linear-gradient(135deg, #667eea, #764ba2)',
-          borderRadius: '16px',
-          padding: '20px',
-          color: 'white',
-          marginBottom: '24px'
-        }}>
-          <div style={{ fontSize: '14px', opacity: 0.9, marginBottom: '12px' }}>
-            📊 Statistiques ({stats.periode_jours} jours)
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
-            <div>
-              <div style={{ fontSize: '28px', fontWeight: '800' }}>
-                {stats.statistiques.total_demandes || 0}
-              </div>
-              <div style={{ fontSize: '11px', opacity: 0.8 }}>Demandes</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '28px', fontWeight: '800' }}>
-                {stats.statistiques.quantite_totale || 0}
-              </div>
-              <div style={{ fontSize: '11px', opacity: 0.8 }}>Unités totales</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '28px', fontWeight: '800' }}>
-                {Math.round(stats.statistiques.quantite_moyenne || 0)}
-              </div>
-              <div style={{ fontSize: '11px', opacity: 0.8 }}>Moyenne</div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Alertes */}
+      {/* 🚨 Alertes */}
       {alerts.length > 0 && (
-        <div style={{ marginBottom: '24px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px' }}>
-            🚨 Alertes Critiques ({alerts.length})
-          </h3>
-          <div style={{ display: 'grid', gap: '12px' }}>
+        <div style={{ marginBottom: '32px' }}>
+          <h2 style={{ fontSize: '24px', fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span>🚨</span> Alertes Critiques ({alerts.length})
+          </h2>
+          <div style={{ display: 'grid', gap: '16px' }}>
             {alerts.map((alert, i) => (
               <div
                 key={i}
                 style={{
-                  background: alert.niveau === 'critique' ? '#fadbd8' : '#fdebd0',
+                  background: alert.niveau === 'critique' ? 'linear-gradient(135deg, #fff5f5, #ffe5e5)' : 'linear-gradient(135deg, #fff8e1, #ffecb3)',
                   border: `2px solid ${alert.niveau === 'critique' ? '#c0392b' : '#e67e22'}`,
-                  borderRadius: '12px',
-                  padding: '16px',
+                  borderRadius: '16px',
+                  padding: '24px',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '12px'
+                  gap: '20px',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+                  animation: 'fadeIn 0.4s ease'
                 }}
               >
                 <div style={{
-                  width: '48px',
-                  height: '48px',
+                  width: '64px',
+                  height: '64px',
                   borderRadius: '50%',
                   background: alert.niveau === 'critique' ? '#c0392b' : '#e67e22',
                   color: 'white',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '18px',
-                  fontWeight: '800'
+                  fontSize: '24px',
+                  fontWeight: '800',
+                  flexShrink: 0,
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
                 }}>
                   {alert.groupe_sanguin}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: '700', marginBottom: '4px' }}>
+                  <div style={{ fontWeight: '700', fontSize: '18px', marginBottom: '6px', color: '#1a1a2e' }}>
                     {alert.groupe_sanguin} - Niveau {alert.niveau}
                   </div>
-                  <div style={{ fontSize: '13px', color: '#6c757d' }}>
-                    Quantité prédite: {alert.quantite_predite} unités (seuil: {alert.seuil})
+                  <div style={{ fontSize: '14px', color: '#6c757d' }}>
+                    Quantité prédite: <strong>{alert.quantite_predite} unités</strong> (seuil: {alert.seuil})
                   </div>
                 </div>
                 <span style={{
-                  padding: '6px 12px',
-                  borderRadius: '20px',
+                  padding: '8px 16px',
+                  borderRadius: '24px',
                   background: 'white',
-                  fontSize: '11px',
-                  fontWeight: '600',
-                  color: alert.niveau === 'critique' ? '#c0392b' : '#e67e22'
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  color: alert.niveau === 'critique' ? '#c0392b' : '#e67e22',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
                 }}>
-                  {alert.niveau.toUpperCase()}
+                  {alert.niveau}
                 </span>
               </div>
             ))}
@@ -365,55 +372,60 @@ export function AIPredictionDashboard({ getHeaders, onToast }) {
         </div>
       )}
 
-      {/* Prédictions */}
+      {/* 📈 Prédictions */}
       {predictions && (
-        <div style={{ marginBottom: '24px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px' }}>
-            📈 Prédictions pour {ville}
-          </h3>
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', 
-            gap: '12px' 
+        <div style={{ marginBottom: '32px' }}>
+          <h2 style={{ fontSize: '24px', fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span>📈</span> Prédictions pour {ville}
+          </h2>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+            gap: '16px'
           }}>
-            {Object.entries(predictions).map(([groupe, quantite]) => (
+            {Object.entries(predictions).map(([groupe, quantite], i) => (
               <div
                 key={groupe}
                 style={{
                   background: 'white',
                   border: '2px solid #e8ecef',
-                  borderRadius: '12px',
-                  padding: '16px',
+                  borderRadius: '16px',
+                  padding: '24px',
                   textAlign: 'center',
-                  transition: 'all 0.2s',
-                  cursor: 'pointer'
+                  transition: 'all 0.3s',
+                  cursor: 'pointer',
+                  animation: `fadeIn 0.4s ease ${i * 0.05}s backwards`,
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.04)'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.1)';
+                  e.currentTarget.style.transform = 'translateY(-8px)';
+                  e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.12)';
+                  e.currentTarget.style.borderColor = '#c0392b';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.04)';
+                  e.currentTarget.style.borderColor = '#e8ecef';
                 }}
               >
                 <div style={{
-                  fontSize: '28px',
+                  fontSize: '42px',
                   fontWeight: '800',
                   color: '#c0392b',
-                  marginBottom: '4px'
+                  marginBottom: '8px',
+                  fontFamily: 'Outfit, sans-serif'
                 }}>
                   {quantite}
                 </div>
                 <div style={{
-                  fontSize: '16px',
+                  fontSize: '20px',
                   fontWeight: '700',
                   color: '#1a1a2e',
                   marginBottom: '4px'
                 }}>
                   {groupe}
                 </div>
-                <div style={{ fontSize: '11px', color: '#6c757d' }}>
+                <div style={{ fontSize: '12px', color: '#6c757d', textTransform: 'uppercase', letterSpacing: '1px' }}>
                   unités
                 </div>
               </div>
@@ -422,13 +434,13 @@ export function AIPredictionDashboard({ getHeaders, onToast }) {
         </div>
       )}
 
-      {/* Graphiques */}
+      {/* 📊 Graphiques */}
       {charts && (
         <div>
-          <h3 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '16px' }}>
-            📊 Visualisations
-          </h3>
-          <div style={{ display: 'grid', gap: '20px' }}>
+          <h2 style={{ fontSize: '24px', fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span>📊</span> Visualisations
+          </h2>
+          <div style={{ display: 'grid', gap: '24px' }}>
             {Object.entries(charts).map(([name, data]) => (
               data && (
                 <div
@@ -436,26 +448,28 @@ export function AIPredictionDashboard({ getHeaders, onToast }) {
                   style={{
                     background: 'white',
                     border: '2px solid #e8ecef',
-                    borderRadius: '16px',
-                    padding: '20px',
-                    overflow: 'hidden'
+                    borderRadius: '20px',
+                    padding: '28px',
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.04)'
                   }}
                 >
-                  <h4 style={{ 
-                    fontSize: '14px', 
-                    fontWeight: '600', 
-                    marginBottom: '16px',
-                    textTransform: 'capitalize'
+                  <h3 style={{
+                    fontSize: '18px',
+                    fontWeight: '700',
+                    marginBottom: '20px',
+                    textTransform: 'capitalize',
+                    color: '#1a1a2e'
                   }}>
                     {name.replace(/_/g, ' ')}
-                  </h4>
+                  </h3>
                   <img
                     src={data}
                     alt={name}
                     style={{
                       width: '100%',
                       height: 'auto',
-                      borderRadius: '8px'
+                      borderRadius: '12px'
                     }}
                   />
                 </div>
@@ -464,18 +478,22 @@ export function AIPredictionDashboard({ getHeaders, onToast }) {
           </div>
         </div>
       )}
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }
 
-// Composant pour afficher les statistiques IA
 export function AIStatsCard({ getHeaders }) {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    fetch(`${ML_API}/statistics/?days=30`, {
-      headers: getHeaders()
-    })
+    fetch(`${ML_API}/statistics/?days=30`, { headers: getHeaders() })
       .then(r => r.json())
       .then(setStats)
       .catch(() => {});
@@ -486,32 +504,25 @@ export function AIStatsCard({ getHeaders }) {
   return (
     <div style={{
       background: 'linear-gradient(135deg, #667eea, #764ba2)',
-      borderRadius: '16px',
-      padding: '20px',
-      color: 'white'
+      borderRadius: '20px',
+      padding: '28px',
+      color: 'white',
+      boxShadow: '0 10px 40px rgba(102, 126, 234, 0.25)'
     }}>
-      <div style={{ fontSize: '14px', opacity: 0.9, marginBottom: '8px' }}>
+      <div style={{ fontSize: '16px', opacity: 0.9, marginBottom: '16px', fontWeight: '600' }}>
         📊 Statistiques IA (30 jours)
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
-        <div>
-          <div style={{ fontSize: '24px', fontWeight: '800' }}>
-            {stats.statistiques?.total_demandes || 0}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
+        {[
+          { label: 'Demandes', value: stats.statistiques?.total_demandes || 0 },
+          { label: 'Unités totales', value: stats.statistiques?.quantite_totale || 0 },
+          { label: 'Moyenne', value: Math.round(stats.statistiques?.quantite_moyenne || 0) }
+        ].map((stat, i) => (
+          <div key={i}>
+            <div style={{ fontSize: '32px', fontWeight: '800' }}>{stat.value}</div>
+            <div style={{ fontSize: '12px', opacity: 0.9 }}>{stat.label}</div>
           </div>
-          <div style={{ fontSize: '11px', opacity: 0.8 }}>Demandes</div>
-        </div>
-        <div>
-          <div style={{ fontSize: '24px', fontWeight: '800' }}>
-            {stats.statistiques?.quantite_totale || 0}
-          </div>
-          <div style={{ fontSize: '11px', opacity: 0.8 }}>Unités totales</div>
-        </div>
-        <div>
-          <div style={{ fontSize: '24px', fontWeight: '800' }}>
-            {Math.round(stats.statistiques?.quantite_moyenne || 0)}
-          </div>
-          <div style={{ fontSize: '11px', opacity: 0.8 }}>Moyenne</div>
-        </div>
+        ))}
       </div>
     </div>
   );

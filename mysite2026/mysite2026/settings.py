@@ -52,7 +52,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'mysite2026.csrf_exempt_middleware.CsrfExemptMiddleware',  # Remplace CsrfViewMiddleware
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -132,17 +132,57 @@ from datetime import timedelta
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-  
+    "http://localhost:5174",
+    "http://127.0.0.1:3000",
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5174",
 ]
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+CORS_EXPOSE_HEADERS = [
+    'content-type',
+    'x-csrftoken',
+    'content-disposition',
+]
+
+# Configuration des sessions pour CORS
+SESSION_COOKIE_SAMESITE = 'Lax'  # Changé de 'None' à 'Lax' pour localhost
+SESSION_COOKIE_SECURE = False  # True en production avec HTTPS
+SESSION_COOKIE_HTTPONLY = False  # Changé à False pour permettre l'accès
+SESSION_COOKIE_AGE = 86400  # 1 jour
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_DOMAIN = None
+SESSION_COOKIE_PATH = '/'
+
+# Désactiver CSRF pour les API (ou utiliser des tokens)
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SECURE = False
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5173",
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ],
+    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
 }
 
 SIMPLE_JWT = {

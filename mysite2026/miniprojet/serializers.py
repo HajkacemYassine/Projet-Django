@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Donneur, Hopital, Don, DemandeUrgente, Campagne, Inscription, Reponse_Appel
+from .models import Donneur, Hopital, Don, DemandeUrgente, Campagne, Inscription, Reponse_Appel, DonneeSante
 from datetime import date
  
  
@@ -121,3 +121,39 @@ class ReponseAppelSerializer(serializers.ModelSerializer):
     class Meta:
         model  = Reponse_Appel
         fields = ['id', 'donneur_nom', 'donneur_groupe', 'donneur_ville', 'date_reponse', 'statut_reponse']
+ 
+class DonneeSanteSerializer(serializers.ModelSerializer):
+    statut_hemoglobine  = serializers.SerializerMethodField()
+    peut_donner         = serializers.SerializerMethodField()
+    recommandations     = serializers.SerializerMethodField()
+    donneur_nom         = serializers.SerializerMethodField()
+ 
+    class Meta:
+        model  = DonneeSante
+        fields = [
+            'id',
+            'donneur',
+            'donneur_nom',
+            'hemoglobine',
+            'tension_arterielle',
+            'poids',
+            'frequence_cardiaque',
+            'notes',
+            'date_mesure',
+            'statut_hemoglobine',
+            'peut_donner',
+            'recommandations',
+        ]
+        read_only_fields = ['id', 'date_mesure', 'donneur']
+ 
+    def get_statut_hemoglobine(self, obj):
+        return obj.statut_hemoglobine()
+ 
+    def get_peut_donner(self, obj):
+        return obj.peut_donner()
+ 
+    def get_recommandations(self, obj):
+        return obj.recommandations()
+ 
+    def get_donneur_nom(self, obj):
+        return obj.donneur.user.get_full_name() or obj.donneur.user.username

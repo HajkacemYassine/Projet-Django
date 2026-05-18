@@ -7,3 +7,17 @@ Predictions result: None
 Prediction request - ville: Tunis, auto_create: True
 Predictions result: {'A+': 6, 'A-': 5, 'B+': 4, 'B-': 3, 'AB+': 3, 'AB-': 2, 'O+': 6, 'O-': 3}
 Alerts generated: 3
+Prediction request - ville: Tunis, auto_create: True
+Predictions result: {'A+': 7, 'A-': 3, 'B+': 4, 'B-': 4, 'AB+': 4, 'AB-': 2, 'O+': 9, 'O-': 2}
+Alerts generated: 4
+Prediction request - ville: Tunis, auto_create: True
+Predictions result: {'A+': 7, 'A-': 3, 'B+': 4, 'B-': 4, 'AB+': 4, 'AB-': 2, 'O+': 9, 'O-': 2}
+Alerts generated: 4
+Prediction request - ville: Tunis, auto_create: True
+Predictions result: {'A+': 7, 'A-': 3, 'B+': 4, 'B-': 4, 'AB+': 4, 'AB-': 2, 'O+': 9, 'O-': 2}
+Alerts generated: 4
+Modèle entraîné - MAE: 1.39, R²: 0.38
+Prediction request - ville: Tunis, auto_create: True
+Modèle chargé - Métriques: {'mae': 1.390962759903236, 'r2_score': 0.3824271738242673, 'cv_mae_mean': 1.1986696459458908, 'cv_mae_std': 0.052469421143812735, 'n_samples': 312, 'model_type': 'RandomForest'}
+Predictions result: {'A+': 7, 'A-': 3, 'B+': 4, 'B-': 4, 'AB+': 4, 'AB-': 1, 'O+': 8, 'O-': 2}
+Alerts generated: 3

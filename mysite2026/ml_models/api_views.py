@@ -11,96 +11,132 @@ from miniprojet.models import Hopital
 @permission_classes([IsAuthenticated])
 def train_prediction_model(request):
     """Entraîne le modèle de prédiction"""
-    predictor = BloodDemandPredictor()
-    success = predictor.train_model()
-    
-    if success:
+    try:
+        predictor = BloodDemandPredictor()
+        success = predictor.train_model()
+        
+        if success:
+            return Response({
+                'message': 'Modèle entraîné avec succès',
+                'status': 'success',
+                'metrics': predictor.model_metrics
+            })
+        else:
+            return Response({
+                'message': 'Pas assez de données pour entraîner le modèle',
+                'status': 'error'
+            }, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
         return Response({
-            'message': 'Modèle entraîné avec succès',
-            'status': 'success'
-        })
-    else:
-        return Response({
-            'message': 'Pas assez de données pour entraîner le modèle',
+            'message': f'Erreur lors de l\'entraînement: {str(e)}',
             'status': 'error'
-        }, status=status.HTTP_400_BAD_REQUEST)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def predict_blood_demand(request):
     """Prédit la demande pour un groupe sanguin spécifique"""
-    groupe_sanguin = request.data.get('groupe_sanguin')
-    ville = request.data.get('ville')
-    date_str = request.data.get('date')
-    
-    if not groupe_sanguin or not ville:
+    try:
+        groupe_sanguin = request.data.get('groupe_sanguin')
+        ville = request.data.get('ville')
+        date_str = request.data.get('date')
+        
+        if not groupe_sanguin or not ville:
+            return Response({
+                'error': 'groupe_sanguin et ville sont requis'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        date = datetime.strptime(date_str, '%Y-%m-%d') if date_str else None
+        
+        predictor = BloodDemandPredictor()
+        prediction = predictor.predict_demand(groupe_sanguin, ville, date)
+        
+        if prediction is None:
+            return Response({
+                'error': 'Impossible de faire la prédiction. Entraînez d\'abord le modèle.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        stats = predictor.get_historical_stats(groupe_sanguin)
+        
         return Response({
-            'error': 'groupe_sanguin et ville sont requis'
-        }, status=status.HTTP_400_BAD_REQUEST)
-    
-    date = datetime.strptime(date_str, '%Y-%m-%d') if date_str else None
-    
-    predictor = BloodDemandPredictor()
-    prediction = predictor.predict_demand(groupe_sanguin, ville, date)
-    
-    if prediction is None:
+            'groupe_sanguin': groupe_sanguin,
+            'ville': ville,
+            'date': date.strftime('%Y-%m-%d') if date else datetime.now().strftime('%Y-%m-%d'),
+            'prediction_quantite': prediction,
+            'statistiques_historiques': stats
+        })
+    except Exception as e:
         return Response({
-            'error': 'Impossible de faire la prédiction. Entraînez d\'abord le modèle.'
-        }, status=status.HTTP_400_BAD_REQUEST)
-    
-    stats = predictor.get_historical_stats(groupe_sanguin)
-    
-    return Response({
-        'groupe_sanguin': groupe_sanguin,
-        'ville': ville,
-        'date': date.strftime('%Y-%m-%d') if date else datetime.now().strftime('%Y-%m-%d'),
-        'prediction_quantite': prediction,
-        'statistiques_historiques': stats
-    })
+            'error': f'Erreur lors de la prédiction: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def predict_all_blood_types(request):
     """Prédit la demande pour tous les groupes sanguins"""
-    ville = request.data.get('ville')
-    date_str = request.data.get('date')
-    
-    if not ville:
+    try:
+        ville = request.data.get('ville')
+        date_str = request.data.get('date')
+        
+        if not ville:
+            return Response({
+                'error': 'ville est requise'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        date = datetime.strptime(date_str, '%Y-%m-%d') if date_str else None
+        
+        predictor = BloodDemandPredictor()
+        predictions = predictor.predict_all_groups(ville, date)
+        
+        if not predictions:
+            return Response({
+                'error': 'Impossible de faire les prédictions. Entraînez d\'abord le modèle.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
         return Response({
-            'error': 'ville est requise'
-        }, status=status.HTTP_400_BAD_REQUEST)
-    
-    date = datetime.strptime(date_str, '%Y-%m-%d') if date_str else None
-    
-    predictor = BloodDemandPredictor()
-    predictions = predictor.predict_all_groups(ville, date)
-    
-    if not predictions:
+            'ville': ville,
+            'date': date.strftime('%Y-%m-%d') if date else datetime.now().strftime('%Y-%m-%d'),
+            'predictions': predictions
+        })
+    except Exception as e:
         return Response({
-            'error': 'Impossible de faire les prédictions. Entraînez d\'abord le modèle.'
-        }, status=status.HTTP_400_BAD_REQUEST)
-    
-    return Response({
-        'ville': ville,
-        'date': date.strftime('%Y-%m-%d') if date else datetime.now().strftime('%Y-%m-%d'),
-        'predictions': predictions
-    })
+            'error': f'Erreur lors de la prédiction: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def get_demand_statistics(request):
     """Récupère les statistiques de demande"""
-    groupe_sanguin = request.query_params.get('groupe_sanguin')
-    days = int(request.query_params.get('days', 30))
-    
-    predictor = BloodDemandPredictor()
-    stats = predictor.get_historical_stats(groupe_sanguin, days)
-    
-    return Response({
-        'groupe_sanguin': groupe_sanguin or 'Tous',
-        'periode_jours': days,
-        'statistiques': stats
-    })
+    try:
+        groupe_sanguin = request.query_params.get('groupe_sanguin')
+        days = int(request.query_params.get('days', 30))
+        
+        predictor = BloodDemandPredictor()
+        
+        # Charger le modèle si disponible
+        predictor.load_model()
+        
+        stats = predictor.get_historical_stats(groupe_sanguin, days)
+        
+        return Response({
+            'groupe_sanguin': groupe_sanguin or 'Tous',
+            'periode_jours': days,
+            'statistiques': stats
+        })
+    except ValueError as e:
+        return Response({
+            'error': f'Paramètre invalide: {str(e)}'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({
+            'error': f'Erreur lors de la récupération des statistiques: {str(e)}',
+            'statistiques': {
+                'total_demandes': 0,
+                'quantite_totale': 0,
+                'quantite_moyenne': 0,
+                'demandes_actives': 0,
+                'model_metrics': {}
+            }
+        }, status=status.HTTP_200_OK)

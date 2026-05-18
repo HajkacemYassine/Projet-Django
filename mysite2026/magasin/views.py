@@ -2,12 +2,11 @@ from urllib import request
 
 from django.shortcuts import redirect, render
 from django.template import loader
-
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .forms import ProduitForm
-from .models import Fournisseur, Produit
-from django.shortcuts import render
-from .models import Produit, Categorie
+from .models import Fournisseur, Produit, Categorie
 from django.contrib.auth.models import User
+
 def index(request):
     products = Produit.objects.all()
     categories = Categorie.objects.all()
@@ -59,7 +58,31 @@ def produit(request):
         'form': form,
         'products': products
     })
-def accueil(request):
-    return render(request, 'accueil.html')
 
-	# Create your views here.
+def accueil(request):
+    return render(request, 'magasin/accueil.html')
+
+class ProduitListView(ListView):
+    model = Produit
+    template_name = 'produit_list.html'
+    context_object_name = 'produits'
+
+class ProduitDetailView(DetailView):
+    model = Produit
+    template_name = 'produit_detail.html'
+    context_object_name = 'produit'
+
+class ProduitCreateView(CreateView):
+    model = Produit
+    template_name = 'produit_form.html'
+    fields = ['libelle', 'description', 'prix', 'categorie', 'fournisseur']
+
+class ProduitUpdateView(UpdateView):
+    model = Produit
+    template_name = 'produit_form.html'
+    fields = ['libelle', 'description', 'prix', 'categorie', 'fournisseur']
+
+class ProduitDeleteView(DeleteView):
+    model = Produit
+    template_name = 'produit_confirm_delete.html'
+    success_url = '/'
