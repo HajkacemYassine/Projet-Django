@@ -108,4 +108,8 @@ urlpatterns = [
     path('health/latest/',   HealthDataLatestView.as_view()),
     path('health/stats/',    HealthDataStatsView.as_view()),
     path('health/<int:pk>/', HealthDataDetailView.as_view()),
+    path('blood-stock/', api_views.blood_stock_list, name='blood-stock-list'),
+    path('blood-stock/<int:pk>/', api_views.blood_stock_detail, name='blood-stock-detail'),
+    path('blood-stock/notifications/', api_views.blood_stock_notifications, name='blood-stock-notifications'),
+    path('blood-stock/notifications/<int:pk>/acknowledge/', api_views.acknowledge_notification, name='acknowledge-notification'),
 ]

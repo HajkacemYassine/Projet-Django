@@ -496,3 +496,47 @@ class PredictionStock(models.Model):
     
     def __str__(self):
         return f"{self.groupe_sanguin} - {self.date_prediction}: {self.quantite_predite} unités ({self.confiance}%)"
+class BloodStock(models.Model):
+    BLOOD_GROUPS = [
+        ('A+', 'A+'),
+        ('A-', 'A-'),
+        ('B+', 'B+'),
+        ('B-', 'B-'),
+        ('AB+', 'AB+'),
+        ('AB-', 'AB-'),
+        ('O+', 'O+'),
+        ('O-', 'O-'),
+    ]
+
+    blood_group = models.CharField(max_length=3, choices=BLOOD_GROUPS, unique=True)
+    quantity = models.PositiveIntegerField(default=0)  # Quantity in milliliters
+    min_threshold = models.PositiveIntegerField(default=500)  # Minimum threshold for alert (in mL)
+    date_last_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.blood_group}: {self.quantity} mL"
+    
+    def is_low(self):
+        """Check if blood stock is low"""
+        return self.quantity <= self.min_threshold
+
+
+class BloodStockNotification(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('sent', 'Sent'),
+        ('acknowledged', 'Acknowledged'),
+    ]
+    
+    blood_stock = models.ForeignKey(BloodStock, on_delete=models.CASCADE, related_name='notifications')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
+    acknowledged_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Alert for {self.blood_stock.blood_group} — {self.status}"
+    
+    class Meta:
+        ordering = ['-created_at']

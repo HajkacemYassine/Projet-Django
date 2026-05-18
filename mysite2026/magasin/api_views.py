@@ -18,7 +18,7 @@ except Exception:
 from .models import Produit, Categorie, Fournisseur, Commande
 from .serializers import (
     ProduitSerializer, CategorieSerializer,
-    FournisseurSerializer, CommandeSerializer
+    FournisseurSerializer, CommandeSerializer,
 )
 
 
@@ -2957,4 +2957,3 @@ def chatbot_historique(request):
         'date':       c.date_debut.strftime('%d/%m/%Y %H:%M'),
     } for c in convs]
     return Response(data)
- 

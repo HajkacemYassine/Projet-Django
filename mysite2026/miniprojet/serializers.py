@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Donneur, Hopital, Don, DemandeUrgente, Campagne, Inscription, Reponse_Appel, DonneeSante
+from .models import BloodStockNotification, Donneur, Hopital, Don, DemandeUrgente, Campagne, Inscription, Reponse_Appel, DonneeSante, BloodStock
 from datetime import date
  
  
@@ -157,3 +157,20 @@ class DonneeSanteSerializer(serializers.ModelSerializer):
  
     def get_donneur_nom(self, obj):
         return obj.donneur.user.get_full_name() or obj.donneur.user.username
+class BloodStockSerializer(serializers.ModelSerializer):
+    is_low = serializers.SerializerMethodField()
+
+    class Meta:
+        model = BloodStock
+        fields = ['id', 'blood_group', 'quantity', 'min_threshold', 'date_last_updated', 'is_low']
+
+    def get_is_low(self, obj):
+        return obj.is_low()
+
+
+class BloodStockNotificationSerializer(serializers.ModelSerializer):
+    blood_group = serializers.CharField(source='blood_stock.blood_group', read_only=True)
+
+    class Meta:
+        model = BloodStockNotification
+        fields = ['id', 'blood_stock', 'blood_group', 'status', 'message', 'created_at', 'sent_at', 'acknowledged_at']

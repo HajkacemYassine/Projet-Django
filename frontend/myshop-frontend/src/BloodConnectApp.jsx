@@ -6,8 +6,6 @@ import LanguageProvider from "./i18n/LanguageProvider";
 import LanguageSwitcher from "./i18n/LanguageSwitcher";
 import HealthDashboard from "./Healthdashboard";
 
-
-
 const BLOOD_API = "http://localhost:8000/blood-api";
 const AuthCtx   = createContext(null);
 const ThemeCtx  = createContext(null);
@@ -500,7 +498,7 @@ const CSS = `
   .equipe-stat-label { font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:1px; font-weight:700; margin-top:4px; }
 `;
 
-// ─── Icons ────────────────────────────────────────────────────────────
+// ─── Icons ──────────────────────────────────────────────────────────
 const I = ({ n, s = 18 }) => {
   const m = {
     user:  <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
@@ -749,9 +747,9 @@ function NotifBell() {
                 <div key={n.id} className={`ni ${!n.lue?'unread':''}`} onClick={()=>!n.lue&&lire(n.id)}>
                   <div className="ni-icon">{ICONS[n.type]||'🔔'}</div>
                   <div style={{flex:1,minWidth:0}}>
-                    <div className="ni-tt">{n.titre}</div>
-                    <div className="ni-mg">{n.message}</div>
-                    <div className="ni-tm">{n.date_relative}</div>
+                    <div style={{fontWeight:700,fontSize:14}}>{n.titre}</div>
+                    <div style={{fontSize:12,color:'var(--txt2)',marginTop:2}}>{n.message}</div>
+                    <div style={{fontSize:11,color:'var(--txt3)',marginTop:2}}>{n.date_relative}</div>
                   </div>
                   {!n.lue && <div className="ni-dot"/>}
                 </div>
@@ -805,8 +803,8 @@ function DemandeCard({ d, i, onRepondre }) {
             {d.est_urgente && <span className="badge-urg"><span className="urg-dot"/>Urgent</span>}
           </div>
           <div style={{fontSize:12,color:'var(--txt2)',display:'flex',gap:12,flexWrap:'wrap'}}>
-            <span><I n="pin" s={12}/> {d.hopital_ville||d.hopital_adresse||'—'}</span>
-            <span><I n="drop" s={12}/> {d.quantite} poches</span>
+            <span><I n="pin" s={12} /> {d.hopital_ville||d.hopital_adresse||'—'}</span>
+            <span><I n="drop" s={12} /> {d.quantite} poches</span>
           </div>
         </div>
       </div>
@@ -827,8 +825,8 @@ function DashDonneur({ user, onToast }) {
   const [nbSOS, setNbSOS] = useState(0);
   const { theme, toggleTheme } = useContext(ThemeCtx);
 
-  const reload = () => fetch(`${BLOOD_API}/dashboard/donneur/`, { headers:H() }).then(r=>r.json()).then(setData).catch(()=>{});
-  const loadSOS = () => fetch(`${BLOOD_API}/alertes-sos/`, { headers:H() }).then(r=>r.json()).then(d=>setNbSOS(d.nb||0)).catch(()=>{});
+  const reload = () => fetch(`${BLOOD_API}/dashboard/donneur/`, { headers: H() }).then(r=>r.json()).then(setData).catch(()=>{});
+  const loadSOS = () => fetch(`${BLOOD_API}/alertes-sos/`, { headers: H() }).then(r=>r.json()).then(d=>setNbSOS(d.nb||0)).catch(()=>{});
 
   useEffect(() => { reload(); }, [page]);
   useEffect(() => { loadSOS(); const iv = setInterval(loadSOS, 60000); return () => clearInterval(iv); }, []);
@@ -836,8 +834,8 @@ function DashDonneur({ user, onToast }) {
   if (!data) return <div style={{padding:60,textAlign:'center',color:'var(--txt2)'}}>Chargement…</div>;
 
   const NAV = [
-    {id:'accueil',   lb:'Tableau de bord', ic:'heart'},
-    {id:'demandes',  lb:'Appels urgents',  ic:'alert'},
+    {id:'accueil',   lb:'Tableau de bord',       ic:'heart'},
+    {id:'demandes',  lb:'Appels urgents',      ic:'alert'},
     {id:'sos',       lb:'Alertes SOS',     ic:'sos'},
     {id:'carte',     lb:'Carte des centres',ic:'map'},
     {id:'agenda',    lb:'Mon agenda',      ic:'agenda'},
@@ -869,7 +867,7 @@ function DashDonneur({ user, onToast }) {
             {nbSOS > 0 && (
               <button
                 onClick={()=>setPage('sos')}
-                style={{display:'flex',alignItems:'center',gap:6,padding:'5px 12px',background:'rgba(230,57,70,.15)',border:'1.5px solid rgba(230,57,70,.4)',borderRadius:20,color:'var(--red)',fontSize:12,fontWeight:700,cursor:'pointer',animation:'pulse 1.5s infinite',fontFamily:"'Plus Jakarta Sans',sans-serif"}}
+                style={{display:'flex',alignItems:'center',gap:6,padding:'5px 12px',background:'rgba(230,57,70,.15)',border:'1.5px solid rgba(230,57,70,.4)',borderRadius:20,color:'var(--red)',fontSize:12,fontWeight:700,cursor:'pointer',fontFamily:"'Plus Jakarta Sans',sans-serif"}}
               >
                 <span style={{width:7,height:7,borderRadius:'50%',background:'var(--red)',display:'inline-block'}}/>
                 {nbSOS} SOS
@@ -902,9 +900,9 @@ function DashDonneur({ user, onToast }) {
   );
 }
 
-function AccueilDonneur({ data, setPage}) {
+function AccueilDonneur({ data, setPage }) {
   const [nbSOS, setNbSOS] = useState(0);
-  const jours = !data.eligible ? Math.max(0,Math.ceil((new Date(data.prochaine_date)-new Date())/86400000)) : 0;
+  const jours = !data.eligible ? Math.max(0, Math.ceil((new Date(data.prochaine_date)-new Date())/86400000)) : 0;
   const pct   = data.eligible ? 100 : Math.max(0, Math.round(100-(jours/56*100)));
 
   useEffect(() => {
@@ -1001,16 +999,16 @@ function DemandesDonneur({  onToast }) {
 
   return (
     <>
-      <div className="sh" style={{marginBottom:14}}>
+      <div className="sh" style={{ marginBottom: 14 }}>
         <div className="st">🚨 Appels urgents</div>
-        <span style={{fontSize:12,color:'var(--txt2)'}}>{demandes.length} résultat(s)</span>
+        <span style={{ fontSize: 12, color: 'var(--txt2)' }}>{demandes.length} résultat(s)</span>
       </div>
       <div className="pills">
         <button className={`pill ${filtre==='compat'?'on':''}`} onClick={()=>setFiltre('compat')}>❤️ Compatibles</button>
         <button className={`pill ${filtre==='tous'?'on':''}`} onClick={()=>setFiltre('tous')}>🩸 Tous</button>
         {GROUPS.map(g=><button key={g} className={`pill ${filtre===g?'on':''}`} onClick={()=>setFiltre(g)} style={{fontSize:11}}>{g}</button>)}
       </div>
-      {loading ? <div style={{color:'var(--txt3)',padding:40,textAlign:'center'}}>Chargement…</div>
+      {loading ? <div style={{ padding: 40, textAlign: 'center', color: 'var(--txt3)' }}>Chargement…</div>
         : <div className="dc-grid">{demandes.length===0?<div style={{gridColumn:'1/-1',textAlign:'center',padding:60,color:'var(--txt3)'}}>Aucun appel urgent compatible.</div>:demandes.map((d,i)=><DemandeCard key={d.id} d={d} i={i} onRepondre={repondre} onToast={onToast}/>)}</div>}
     </>
   );
@@ -1039,7 +1037,7 @@ function DonsDonneur({ reload, onToast }) {
 
   return (
     <>
-      <div className="sh"><div className="st">🩸 Mes dons ({dons.length})</div><button className="btn-add" onClick={()=>setShow(true)}><I n="plus" s={14}/> Enregistrer</button></div>
+      <div className="sh"><div className="st">🩸 Mes dons ({dons.length})</div><button className="btn-add" onClick={()=>setShow(true)}><I n="plus" s={14} /> Enregistrer</button></div>
       <div className="tc">
         {loading?<div style={{padding:40,textAlign:'center',color:'var(--txt3)'}}>Chargement…</div>:(
           <table>
@@ -1090,7 +1088,7 @@ function CampagnesDonneur({ onToast }) {
   return (
     <>
       <div className="sh"><div className="st">📅 Campagnes ({camps.length})</div></div>
-      {loading?<div style={{color:'var(--txt3)',padding:40,textAlign:'center'}}>Chargement…</div>:(
+      {loading?<div style={{padding:40,textAlign:'center',color:'var(--txt3)'}}>Chargement…</div>:(
         <div className="dc-grid">
           {camps.length===0?<div style={{gridColumn:'1/-1',textAlign:'center',padding:60,color:'var(--txt3)'}}>Aucune campagne disponible.</div>
             :camps.map((c,i)=>{
@@ -1100,7 +1098,7 @@ function CampagnesDonneur({ onToast }) {
                 <div key={c.id} className="camp-card" style={{animationDelay:`${i*0.06}s`}}>
                   <div style={{display:'flex',justifyContent:'space-between',marginBottom:10}}>
                     <strong style={{fontSize:14}}>{c.nom}</strong>
-                    <span className={`bdg ${c.est_complete?'bdg-gray':'bdg-g'}`}>{c.est_complete?'Complet':`${c.places_restantes} places`}</span>
+                    <span className={`bdg ${c.est_complete?'bdg-gray':'bdg-b'}`}>{c.est_complete?'Complet':`${c.places_restantes} places`}</span>
                   </div>
                   <div style={{fontSize:12,color:'var(--txt2)',display:'flex',flexDirection:'column',gap:4,marginBottom:10}}>
                     <span><I n="cal" s={11}/> {new Date(c.date).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})}</span>
@@ -1144,11 +1142,11 @@ function HistoriqueDonneur() {
     <>
       <div className="sh"><div className="st">📋 Historique complet</div></div>
       <div className="tabs-row">{TABS.map(t=><button key={t.id} className={`tab ${onglet===t.id?'on':''}`} onClick={()=>setOnglet(t.id)}>{t.l}</button>)}</div>
-      {loading?<div style={{color:'var(--txt3)',padding:40,textAlign:'center'}}>Chargement…</div>:(
+      {loading?<div style={{padding:40,textAlign:'center',color:'var(--txt3)'}}>Chargement…</div>:(
         <div className="tc">
           {onglet==='dons' && <table><thead><tr><th>#</th><th>Date</th><th>Établissement</th><th>Notes</th><th>Statut</th></tr></thead><tbody>{dons.length===0?<tr><td colSpan={5} style={{textAlign:'center',padding:40,color:'var(--txt3)'}}>Aucun don</td></tr>:dons.map((d,i)=><tr key={d.id}><td style={{color:'var(--txt3)'}}>{dons.length-i}</td><td>{new Date(d.date_don).toLocaleDateString('fr-FR')}</td><td>{d.hopital_nom||'—'}</td><td style={{color:'var(--txt2)'}}>{d.notes||'—'}</td><td><span className={`bdg ${d.valide?'bdg-g':'bdg-gray'}`}>{d.valide?'Validé':'En attente'}</span></td></tr>)}</tbody></table>}
           {onglet==='reponses' && <table><thead><tr><th>#</th><th>Date</th><th>Groupe</th><th>Hôpital</th><th>Statut</th></tr></thead><tbody>{reponses.length===0?<tr><td colSpan={5} style={{textAlign:'center',padding:40,color:'var(--txt3)'}}>Aucune réponse</td></tr>:reponses.map((r,i)=><tr key={r.id}><td style={{color:'var(--txt3)'}}>{reponses.length-i}</td><td>{new Date(r.date_reponse).toLocaleDateString('fr-FR')}</td><td><span className="bdg bdg-r" style={{fontWeight:800}}>{r.groupe_sanguin||'—'}</span></td><td>{r.hopital_nom||'—'}</td><td><span className={`bdg ${r.statut_reponse==='confirme'?'bdg-g':r.statut_reponse==='annule'?'bdg-gray':'bdg-y'}`}>{r.statut_reponse||'en attente'}</span></td></tr>)}</tbody></table>}
-          {onglet==='inscs' && <table><thead><tr><th>#</th><th>Campagne</th><th>Date</th><th>Créneau</th><th>Présence</th></tr></thead><tbody>{inscs.length===0?<tr><td colSpan={5} style={{textAlign:'center',padding:40,color:'var(--txt3)'}}>Aucune inscription</td></tr>:inscs.map((ins,i)=><tr key={ins.id}><td style={{color:'var(--txt3)'}}>{inscs.length-i}</td><td>{ins.campagne_nom||'—'}</td><td>{ins.campagne_date?new Date(ins.campagne_date).toLocaleDateString('fr-FR'):'—'}</td><td><span className="bdg bdg-b">{ins.crenau_horaire||'—'}</span></td><td><span className={`bdg ${ins.present?'bdg-g':'bdg-gray'}`}>{ins.present?'Présent':'En attente'}</span></td></tr>)}</tbody></table>}
+          {onglet==='inscs' && <table><thead><tr><th>#</th><th>Campagne</th><th>Date</th><th>Créneau</th><th>Présence</th></tr></thead><tbody>{inscs.length===0?<tr><td colSpan={5} style={{textAlign:'center',padding:60,color:'var(--txt3)'}}>Aucune inscription</td></tr>:inscs.map((ins,i)=><tr key={ins.id}><td style={{color:'var(--txt3)'}}>{inscs.length-i}</td><td>{ins.campagne_nom||'—'}</td><td>{ins.campagne_date?new Date(ins.campagne_date).toLocaleDateString('fr-FR'):'—'}</td><td><span className="bdg bdg-b">{ins.crenau_horaire||'—'}</span></td><td><span className={`bdg ${ins.present?'bdg-g':'bdg-gray'}`}>{ins.present?'Présent':'En attente'}</span></td></tr>)}</tbody></table>}
         </div>
       )}
     </>
@@ -1269,28 +1267,33 @@ function GamificationDonneur() {
 function MatchingDonneur({  onToast }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  useEffect(()=>{ fetch(`${BLOOD_API}/mes-matches/`,{headers:H()}).then(r=>r.json()).then(setData).catch(()=>{}).finally(()=>setLoading(false)); },[]);
+  useEffect(() => {
+    fetch(`${BLOOD_API}/mes-matches/`, { headers: H() })
+      .then(r => r.json())
+      .then(d => { setData(d); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
 
   const repondre = async (id) => {
-    const res = await fetch(`${BLOOD_API}/reponses/`,{method:'POST',headers:JH(),body:JSON.stringify({demande:id})});
+    const res = await fetch(`${BLOOD_API}/reponses/`, { method: 'POST', headers: JH(), body: JSON.stringify({ demande: id }) });
     const d = await res.json();
-    if(res.ok) onToast('✅ Réponse enregistrée !'); else onToast(d.error||'Erreur','err');
+    if (res.ok) { onToast('✅ Réponse enregistrée !'); } else onToast(d.error || 'Erreur', 'err');
   };
 
-  if(loading) return <div style={{padding:60,textAlign:'center',color:'var(--txt3)'}}>Calcul du matching…</div>;
-  if(!data?.eligible) return <div style={{padding:60,textAlign:'center'}}><div style={{fontSize:48,marginBottom:12}}>⏳</div><div style={{fontFamily:"'Syne',sans-serif",fontSize:18,fontWeight:700}}>Non éligible</div><div style={{color:'var(--txt2)',fontSize:13,marginTop:8}}>{data?.message}</div></div>;
+  if (loading) return <div style={{ padding: 60, textAlign: 'center', color: 'var(--txt3)' }}>Calcul du matching…</div>;
+  if (!data?.eligible) return <div style={{ padding: 60, textAlign: 'center' }}>
+    <div style={{ fontSize: 48, marginBottom: 12 }}>⏳</div>
+    <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Non éligible</div>
+    <div style={{ color: 'var(--txt2)', fontSize: 13, marginTop: 8 }}>Le groupe sanguin n'est pas compatible.</div>
+  </div>;
 
   return (
     <>
-      <div style={{background:'linear-gradient(135deg,rgba(230,57,70,.12),rgba(124,58,237,.06))',border:'1px solid rgba(230,57,70,.2)',borderRadius:'var(--r)',padding:'18px 22px',marginBottom:22,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+      <div style={{ background: 'linear-gradient(135deg,rgba(230,57,70,.12),rgba(124,58,237,.06))', border: '1px solid rgba(230,57,70,.2)', borderRadius: 'var(--r)', padding: '18px 22px', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ width: 50, height: 50, borderRadius: '50%', background: 'linear-gradient(135deg,var(--vio),var(--blue))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0 }}>🤖</div>
         <div>
-          <div style={{fontSize:11,color:'var(--txt2)',textTransform:'uppercase',letterSpacing:'1px',marginBottom:4}}>Matching IA</div>
-          <div style={{fontFamily:"'Syne',sans-serif",fontSize:20,fontWeight:800}}>🤝 {data.nb_matches} demandes compatibles</div>
-          <div style={{fontSize:12,color:'var(--txt2)',marginTop:4}}>Triées par pertinence pour le groupe <strong style={{color:'var(--red)'}}>{data.groupe_sanguin}</strong></div>
-        </div>
-        <div style={{textAlign:'center',padding:'10px 18px',background:'rgba(230,57,70,.1)',borderRadius:12}}>
-          <div style={{fontFamily:"'Syne',sans-serif",fontSize:30,fontWeight:800,color:'var(--red)'}}>{data.groupe_sanguin}</div>
-          <div style={{fontSize:11,color:'var(--txt2)'}}>Votre groupe</div>
+          <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 16, fontWeight: 700, marginBottom: 4 }}>Votre assistant personnel</div>
+          <div style={{ fontSize: 12, color: 'var(--txt2)' }}>Posez vos questions sur l\'éligibilité, les médicaments, les voyages, ou le processus de don</div>
         </div>
       </div>
 
@@ -2003,7 +2006,7 @@ function ChatbotAssistant({ onToast }) {
 }
 
 // ─── PRÉDICTION STOCK IA ─────────────────────────────────────────────────────
-function PredictionStock({ onToast }) {
+function PredictionStock({  }) {
   const [predictions, setPredictions] = useState([]);
   const [alertes, setAlertes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -2356,7 +2359,7 @@ function CampagnesHopital({ reload, onToast }) {
               return (
                 <div key={c.id} className="camp-card" style={{animationDelay:`${i*0.06}s`}}>
                   <div style={{display:'flex',justifyContent:'space-between',marginBottom:10}}><strong style={{fontSize:14}}>{c.nom}</strong><span className={`bdg ${c.est_complete?'bdg-gray':'bdg-b'}`}>{c.est_complete?'Complet':`${c.places_restantes} places`}</span></div>
-                  <div style={{fontSize:12,color:'var(--txt2)',display:'flex',flexDirection:'column',gap:4,marginBottom:10}}><span><I n="cal" s={11}/> {c.date?new Date(c.date).toLocaleDateString('fr-FR'):''}</span><span><I n="pin" s={11}/> {c.lieu}</span><span><I n="users" s={11}/> {c.nb_inscrits} / {c.capacite_totale} inscrits</span></div>
+                  <div style={{fontSize:12,color:'var(--txt2)',display:'flex',flexDirection:'column',gap:4,marginBottom:10}}><span><I n="cal" s={11}/> {c.date?new Date(c.date).toLocaleDateString('fr-FR'):''}</span><span><I n="pin" s={11} /> {c.lieu}</span><span><I n="users" s={11}/> {c.nb_inscrits} / {c.capacite_totale} inscrits</span></div>
                   <div className="prog-bar"><div className="prog-fill" style={{width:`${Math.min(pct,100)}%`,background:pct>=90?'var(--red)':pct>=60?'var(--amb)':'var(--grn)'}}/></div>
                 </div>
               );
@@ -2397,7 +2400,129 @@ function ProfilHopital({ data, onToast }) {
     </div>
   );
 }
+function BloodStockPage({ onToast }) {
+  const [stocks, setStocks] = useState([]);
+  const [notifs, setNotifs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showEdit, setShowEdit] = useState(null);
+  const [editForm, setEditForm] = useState({ quantity: 0 });
 
+  const reload = () => {
+    Promise.all([
+      fetch(`${BLOOD_API}/blood-stock/`, { headers: H() }).then(r => r.json()),
+      fetch(`${BLOOD_API}/blood-stock/notifications/`, { headers: H() }).then(r => r.json()),
+    ])
+      .then(([s, n]) => { setStocks(s); setNotifs(n); setLoading(false); })
+      .catch(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    let active = true;
+    const load = async () => {
+      try {
+        const [rS, rN] = await Promise.all([
+          fetch(`${BLOOD_API}/blood-stock/`, { headers: H() }),
+          fetch(`${BLOOD_API}/blood-stock/notifications/`, { headers: H() }),
+        ]);
+        if (!active) return;
+        setStocks(await rS.json());
+        setNotifs(await rN.json());
+      } catch {}
+      if (active) setLoading(false);
+    };
+    load();
+    return () => { active = false; };
+  }, []);
+
+  const updateStock = async () => {
+    const res = await fetch(`${BLOOD_API}/blood-stock/${showEdit}/`, {
+      method: 'PUT',
+      headers: JH(),
+      body: JSON.stringify({ quantity: editForm.quantity }),
+    });
+    if (res.ok) { onToast('✅ Stock mis à jour !'); setShowEdit(null); reload(); }
+    else onToast('Erreur', 'err');
+  };
+
+  const acknowledge = async (id) => {
+    await fetch(`${BLOOD_API}/blood-stock/notifications/${id}/acknowledge/`, {
+      method: 'PUT', headers: H(),
+    });
+    onToast('✅ Notification acquittée');
+    reload();
+  };
+
+  const bloodColor = (s) => s.is_low ? 'var(--red)' : s.quantity < s.min_threshold * 1.5 ? 'var(--amb)' : 'var(--grn)';
+
+  if (loading) return <div style={{ padding: 60, textAlign: 'center', color: 'var(--txt3)' }}>Chargement…</div>;
+  return (
+    <>
+      {/* Stats */}
+      <div className="sg" style={{ marginBottom: 28 }}>
+        <div className="sc"><div className="sc-ic" style={{ background: 'rgba(16,185,129,.15)', fontSize: 22 }}>🩸</div><div><div className="sc-v" style={{ color: 'var(--grn)' }}>{stocks.filter(s => !s.is_low).length}</div><div className="sc-l">Groupes OK</div></div></div>
+        <div className="sc"><div className="sc-ic" style={{ background: 'rgba(225,29,72,.15)', fontSize: 22 }}>⚠️</div><div><div className="sc-v" style={{ color: 'var(--red)' }}>{stocks.filter(s => s.is_low).length}</div><div className="sc-l">Stocks bas</div></div></div>
+        <div className="sc"><div className="sc-ic" style={{ background: 'rgba(245,158,11,.15)', fontSize: 22 }}>🔔</div><div><div className="sc-v" style={{ color: 'var(--amb)' }}>{notifs.filter(n => n.status === 'pending').length}</div><div className="sc-l">Alertes</div></div></div>
+      </div>
+
+      {/* Grille stocks */}
+      <div className="card" style={{ marginBottom: 24 }}>
+        <div className="card-t">🩸 Stock par groupe sanguin</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16 }}>
+          {stocks.map(s => (
+            <div key={s.id} style={{ padding: 20, background: 'var(--bg3)', borderRadius: 16, border: `2px solid ${bloodColor(s)}33`, textAlign: 'center', transition: 'all .3s' }}>
+              <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 34, fontWeight: 800, color: bloodColor(s) }}>{s.blood_group}</div>
+              <div style={{ fontSize: 22, fontWeight: 700, margin: '8px 0' }}>{s.quantity} <span style={{ fontSize: 12, color: 'var(--txt3)' }}>mL</span></div>
+              <div style={{ fontSize: 11, color: 'var(--txt3)', marginBottom: 12 }}>Seuil : {s.min_threshold} mL</div>
+              {s.is_low && <div className="bdg bdg-r" style={{ marginBottom: 10, display: 'inline-flex' }}>⚠️ Stock bas</div>}
+              <button className="btn-sm btn-sm-r" style={{ width: '100%' }} onClick={() => { setShowEdit(s.id); setEditForm({ quantity: s.quantity }); }}>
+                ✏️ Modifier
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Notifications */}
+      {notifs.length > 0 && (
+        <div className="card">
+          <div className="card-t">🔔 Alertes ({notifs.length})</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {notifs.map(n => (
+              <div key={n.id} style={{ padding: 14, background: n.status === 'pending' ? 'rgba(225,29,72,.08)' : 'var(--bg3)', borderLeft: `4px solid ${n.status === 'pending' ? 'var(--red)' : 'var(--bdr)'}`, borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+                <div>
+                  <strong style={{ fontSize: 14 }}>{n.blood_group}</strong>
+                  <p style={{ fontSize: 12, color: 'var(--txt2)', marginTop: 4 }}>{n.message}</p>
+                  <div style={{ fontSize: 11, color: 'var(--txt3)', marginTop: 4 }}>{n.created_at}</div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                  <span className={`bdg ${n.status === 'pending' ? 'bdg-r' : n.status === 'sent' ? 'bdg-y' : 'bdg-g'}`}>{n.status}</span>
+                  {n.status !== 'acknowledged' && (
+                    <button className="btn-sm btn-sm-g" onClick={() => acknowledge(n.id)}>✓ Acquitter</button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Modal édition */}
+      {showEdit && (
+        <Modal title="✏️ Modifier le stock" onClose={() => setShowEdit(null)}>
+          <div className="fgrp">
+            <label className="flbl">Nouvelle quantité (mL)</label>
+            <input className="finp" type="number" min="0" value={editForm.quantity}
+              onChange={e => setEditForm({ quantity: parseInt(e.target.value) || 0 })} />
+          </div>
+          <div className="f-acts">
+            <button className="btn-can" onClick={() => setShowEdit(null)}>Annuler</button>
+            <button className="btn-sub" onClick={updateStock}>Sauvegarder</button>
+          </div>
+        </Modal>
+      )}
+    </>
+  );
+}
 // ─── DASHBOARD ADMIN ──────────────────────────────────────────────────
 function DashAdmin({ user, onToast }) {
   const [data, setData] = useState(null);
@@ -2415,6 +2540,7 @@ function DashAdmin({ user, onToast }) {
     {id:'hopitaux', lb:'Hôpitaux',           ic:'hosp'},
     {id:'donneurs', lb:'Donneurs',           ic:'users'},
     {id:'demandes', lb:'Toutes les demandes',ic:'alert'},
+    {id:'blood_stock',  lb:'Stock Sanguin',       ic:'drop'},
   ];
 
   const valider = async (id) => {
@@ -2461,15 +2587,16 @@ function DashAdmin({ user, onToast }) {
 
           {page==='hopitaux' && <><div className="sh"><div className="st">🏥 Tous les hôpitaux</div></div>
             <div className="tc"><table><thead><tr><th>Établissement</th><th>Ville</th><th>Agrément</th><th>Statut</th></tr></thead>
-            <tbody>{(data.tous_hopitaux||[]).map(h=><tr key={h.id}><td><div style={{display:'flex',alignItems:'center',gap:10}}><div className="sb-av" style={{width:30,height:30,fontSize:12,background:'linear-gradient(135deg,var(--blue-d),var(--blue))'}}>{h.nom[0]}</div><strong>{h.nom}</strong></div></td><td style={{color:'var(--txt2)'}}>{h.ville||h.adresse}</td><td><span className="bdg bdg-b">{h.agrement||h.num_agrement}</span></td><td><span className={`bdg ${h.valide?'bdg-g':'bdg-y'}`}>{h.valide?'Validé':'En attente'}</span></td></tr>)}</tbody>
+            <tbody>{(data.tous_hopitaux||[]).map(h=><tr key={h.id}><td><div style={{display:'flex',alignItems:'center',gap:10}}><div className="sb-av" style={{width:30,height:30,fontSize:12,background:'linear-gradient(135deg,var(--blue-d),var(--blue))'}}>{h.nom[0]}</div><strong>{h.nom}</strong></div></td><td style={{color:'var(--txt2)'}}>{h.ville||h.adresse}</td><td><span className="bdg bdg-b">{h.agrement||h.num_agrement}</span></td><td><span className={`bdg ${h.valide?'bdg-g':'bdg-gray'}`}>{h.valide?'Validé':'En attente'}</span></td></tr>)}</tbody>
             </table></div>
           </>}
 
           {page==='donneurs' && <><div className="sh"><div className="st">🫀 Tous les donneurs</div><button className="btn-add" onClick={exportCSV} style={{background:'linear-gradient(135deg,#166534,var(--grn))'}}><I n="dl" s={14}/> Export CSV</button></div>
             <div className="tc"><table><thead><tr><th>Donneur</th><th>Groupe</th><th>Ville</th><th>Dons</th><th>Statut</th></tr></thead>
-            <tbody>{(data.tous_donneurs||[]).map(d=><tr key={d.id}><td><div style={{display:'flex',alignItems:'center',gap:10}}><div className="sb-av" style={{width:30,height:30,fontSize:12}}>{(d.nom||d.username||'?')[0].toUpperCase()}</div><strong>{d.nom||d.username}</strong></div></td><td><span className="bdg bdg-r" style={{fontFamily:"'Syne',sans-serif",fontWeight:800}}>{d.groupe_sanguin}</span></td><td style={{color:'var(--txt2)'}}>{d.ville}</td><td><strong>{d.nb_dons}</strong></td><td><span className={`bdg ${d.actif?'bdg-g':'bdg-gray'}`}>{d.actif?'Actif':'Inactif'}</span></td></tr>)}</tbody>
+            <tbody>{(data.tous_donneurs||[]).map(d=><tr key={d.id}><td><div style={{display:'flex',alignItems:'center',gap:10}}><div className="sb-av" style={{width:30,height:30,fontSize:12}}>{(d.nom||d.username||'?')[0].toUpperCase()}</div><strong>{d.nom||d.username}</strong></div></td><td><span className="bdg bdg-r" style={{fontWeight:800}}>{d.groupe_sanguin}</span></td><td style={{color:'var(--txt2)'}}>{d.ville}</td><td><strong>{d.nb_dons}</strong></td><td><span className={`bdg ${d.actif?'bdg-g':'bdg-gray'}`}>{d.actif?'Actif':'Inactif'}</span></td></tr>)}</tbody>
             </table></div>
           </>}
+          {page==='blood_stock' && <BloodStockPage onToast={onToast}/>}
 
           {page==='demandes' && <><div className="sh"><div className="st">🚨 Toutes les demandes</div></div><div className="dc-grid">{(data.toutes_demandes||[]).map((d,i)=><DemandeCard key={d.id} d={d} i={i}/>)}</div></>}
         </div>

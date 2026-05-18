@@ -15,12 +15,12 @@ from django.shortcuts import get_object_or_404
 
 from miniprojet.models import (
     Donneur, Hopital, Don, DemandeUrgente,
-    Campagne, Inscription, Reponse_Appel, DonneeSante
+    Campagne, Inscription, Reponse_Appel, DonneeSante, BloodStock, BloodStockNotification
 )
 from miniprojet.serializers import (
-    DonneurSerializer, HopitalSerializer, HopitalSimpleSerializer,
+    BloodStockNotificationSerializer, DonneurSerializer, HopitalSerializer, HopitalSimpleSerializer,
     DemandeUrgenteSerializer, DonSerializer, CampagneSerializer,
-    InscriptionSerializer, ReponseAppelSerializer, DonneeSanteSerializer
+    InscriptionSerializer, ReponseAppelSerializer, DonneeSanteSerializer, BloodStockSerializer
 )
  
  
@@ -2561,3 +2561,52 @@ class HealthDataStatsView(APIView):
                 'total_entrees': len(hemoglobin_values),
             }
         })
+# GET all stocks / PUT update quantity
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def blood_stock_list(request):
+    stocks = BloodStock.objects.all().order_by('blood_group')
+    serializer = BloodStockSerializer(stocks, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+def blood_stock_detail(request, pk):
+    try:
+        stock = BloodStock.objects.get(pk=pk)
+    except BloodStock.DoesNotExist:
+        return Response({'error': 'Not found'}, status=404)
+
+    if request.method == 'GET':
+        return Response(BloodStockSerializer(stock).data)
+
+    elif request.method == 'PUT':
+        serializer = BloodStockSerializer(stock, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def blood_stock_notifications(request):
+    notifs = BloodStockNotification.objects.all()
+    serializer = BloodStockNotificationSerializer(notifs, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def acknowledge_notification(request, pk):
+    try:
+        notif = BloodStockNotification.objects.get(pk=pk)
+    except BloodStockNotification.DoesNotExist:
+        return Response({'error': 'Not found'}, status=404)
+
+    from django.utils import timezone
+    notif.status = 'acknowledged'
+    notif.acknowledged_at = timezone.now()
+    notif.save()
+    return Response(BloodStockNotificationSerializer(notif).data)
